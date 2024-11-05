@@ -7,10 +7,11 @@ public class AIController : MonoBehaviour
 
     DriveVehicle[] dhs;
     public Circuit circuit;
-    public float steeringSensitivity = 0.2f;
+    public float steeringSensitivity = 0.15f;
     Vector3 target;  // target car is going towards
     int currentWP = 0;
     Rigidbody rb; // needed for getting the speed of the car
+    private DataLogger logger; // logs data collected from car after app ends
 
 
     // Start is called before the first frame update
@@ -19,13 +20,17 @@ public class AIController : MonoBehaviour
         dhs = this.GetComponentsInChildren<DriveVehicle>();
         target = circuit.waypoints[currentWP].transform.position;
         rb = this.GetComponent<Rigidbody>();
+        logger = GetComponent<DataLogger>(); // Initialize DataLogger
+
+        // Start logging data
+        logger.StartLogging();
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        //angle between where the car is facing and the distance of the waypoint from the car
+        // angle between where the car is facing and the distance of the waypoint from the car
         Vector3 worldTarget = this.transform.InverseTransformPoint(target);  // target relative to the car
         float distanceToTarget = Vector3.Distance(target, this.transform.position);  
         float targetAngle = Mathf.Atan2(worldTarget.x, worldTarget.z) * Mathf.Rad2Deg;  // translate from Radian to Degrees
@@ -37,8 +42,10 @@ public class AIController : MonoBehaviour
             dhs[i].Go(a,s);
         }
 
-        //update the waypoints
-        if (distanceToTarget < 5) 
+        logger.LogData(transform.position, rb.velocity.magnitude, s);
+
+        // update the waypoints
+        if (distanceToTarget < 4) 
         {
 
             currentWP++;
@@ -51,4 +58,15 @@ public class AIController : MonoBehaviour
         }
     }
       
+    public void CaptureData()
+    {
+        logger.LogData(transform.position, rb.velocity.magnitude, rb.angularVelocity.magnitude);
+    }
+
+    public void OnDisable()
+    {
+        // Stop logging data when the script is disabled or play mode stops
+        logger.StopLogging();
+    }
+
 }

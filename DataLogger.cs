@@ -27,8 +27,8 @@ public class DataLogger : MonoBehaviour
     void FixedUpdate()
     {
         if (isLogging)
-        {
-            //Call log data from another script
+        { 
+            // Call log data from another script
             AIController aiController = GetComponent<AIController>();
             if(aiController != null) 
             {
@@ -59,7 +59,7 @@ public class DataLogger : MonoBehaviour
 
     private void SaveLog()
     {
-        //Write all logged data to the file
+        // Write all logged data to the file
         File.WriteAllLines(filePath, logData.ToArray());
     }
 
