@@ -42,7 +42,7 @@ public class AIController : MonoBehaviour
 
         if (distanceToTarget < 10)
         {
-            b = 0.6f;
+            b = 0.6f; // brake is activated
         }
         for (int i = 0; i < dhs.Length; i++)
         {
