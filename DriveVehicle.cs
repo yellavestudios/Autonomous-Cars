@@ -10,6 +10,7 @@ public class DriveVehicle : MonoBehaviour
     public GameObject wheelMesh;
     public float maxSteerAngle = 15;
     public bool canTurn = true;
+    public float maxBrakeTorque = 500;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,7 +18,7 @@ public class DriveVehicle : MonoBehaviour
 
     }
 
-    public void Go(float accel, float steer)
+    public void Go(float accel, float steer, float brake)
     {
 
         accel = Mathf.Clamp(accel, 1, -1); 
@@ -29,6 +30,12 @@ public class DriveVehicle : MonoBehaviour
             steer = Mathf.Clamp(steer, -1, 1) * maxSteerAngle;
             WC.steerAngle = steer;
         }
+        else
+        {
+            brake = Mathf.Clamp(brake, -1, 1) * maxBrakeTorque;
+            WC.brakeTorque = brake;
+        }
+
         // this makes your wheels turn with colliders
         Quaternion quat;
         Vector3 pos;

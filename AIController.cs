@@ -11,6 +11,7 @@ public class AIController : MonoBehaviour
     Vector3 target;  // target car is going towards
     int currentWP = 0;
     Rigidbody rb; // needed for getting the speed of the car
+    public GameObject brakeLight;
     private DataLogger logger; // logs data collected from car after app ends
 
 
@@ -35,17 +36,32 @@ public class AIController : MonoBehaviour
         float distanceToTarget = Vector3.Distance(target, this.transform.position);  
         float targetAngle = Mathf.Atan2(worldTarget.x, worldTarget.z) * Mathf.Rad2Deg;  // translate from Radian to Degrees
 
-        float a = -1.0f; //use -1 instead of 1, or car will accellerate backwards
-        float s = Mathf.Clamp(targetAngle * steeringSensitivity, -1,1) * Mathf.Sign(rb.velocity.magnitude); 
+        float a = -1f; //use -1 instead of 1, or car will accellerate backwards
+        float s = Mathf.Clamp(targetAngle * steeringSensitivity, -1,1) * Mathf.Sign(rb.velocity.magnitude);
+        float b = 0;
+
+        if (distanceToTarget < 10)
+        {
+            b = 0.6f;
+        }
         for (int i = 0; i < dhs.Length; i++)
         {
-            dhs[i].Go(a,s);
+            dhs[i].Go(a,s,b);
+        }
+
+        if (b > 0)
+        {
+            brakeLight.SetActive(true);
+        }
+        else
+        {
+            brakeLight.SetActive(false);
         }
 
         logger.LogData(transform.position, rb.velocity.magnitude, s);
 
         // update the waypoints
-        if (distanceToTarget < 4) 
+        if (distanceToTarget < 5) 
         {
 
             currentWP++;
